@@ -6,13 +6,15 @@ require("/libs/color")
 require("/libs/vector")
 utf8 = require("/libs/utf8")
 keymap = require("/libs/keymap")
+menu = require("/libs/menu")
 
 require("/libs/screen")
 print = require("/libs/console")
 
 function game.conf()
-	game.title = "Super Game"
-	game.version = "prot.0.1"
+	game.title = "First Game"
+	game.version = "prot.0.2"
+	game.language = "en"
 end
 
 function love.load()
@@ -23,9 +25,9 @@ function love.load()
 end
 
 function love.keypressed(key, scancode, isrepeat)
-	if key == "escape" then
-		love.event.quit()
-	end
+	-- if key == "escape" then
+	--	love.event.quit()
+	-- end
 end
 
 function love.run()
@@ -68,8 +70,10 @@ function love.run()
 
 		if timer then
 			for id,tmr in pairs(timer.timers) do
-				if (love.timer.getTime() - tmr.lastcall) > tmr.delay then
-					timer.run(id)
+				if not tmr.pause and not tmr.stop then
+					if (love.timer.getTime() - tmr.lastcall) > tmr.delay then
+						timer.run(id)
+					end
 				end
 			end
 		end

@@ -3,47 +3,58 @@ assert(game.screens, "game.screen required")
 
 local screen = game.screens.new()
 screen.name = "mainmenu"
+screen.mousevisible = false
 
 function screen:load()
 	self.backgroud = love.graphics.newImage("/resources/backgrounds/plane.png")
 	self.titlefont = love.graphics.newFont("/resources/fonts/bikang_struck.ttf", 100)
 	self.menufont = love.graphics.newFont("/resources/fonts/bikang_struck.ttf", 65)
 
-	self.menu = {
-		{
-			name = "Play",
-			func = function()
+	self.menu = {}
 
-			end
-		},
-		{
-			name = "Option",
-			func = function()
+	local list = menu.newselectlist(-40, self.menufont, game.colors.white, game.colors.blue)
+	self.menu.main = list
 
-			end
-		},
-		{
-			name = "Exit",
-			func = function()
-				love.event.quit()
-			end
-		},
-	}
+	list:additem("Play", function(item)
+		game.screens.load(require("/screens/game"))
+	end)
+	list:additem("Option", function(item)
+		self.menu.active = self.menu.option
+	end)
+	list:additem("Exit", function(item)
+		love.event.quit()
+	end)
 
-	self.menupos = 1
+	local list = menu.newselectlist(-40, self.menufont, game.colors.white, game.colors.blue)
+	self.menu.option = list
+
+	list:additem("Fullscreen: " .. (love.window.getFullscreen() and "on" or "off"), function(item)
+		love.window.setFullscreen(not love.window.getFullscreen())
+		item.text = "Fullscreen: " .. (love.window.getFullscreen() and "on" or "off")
+	end)
+	list:additem("Language: " .. game.language, function(item)
+
+	end)
+	list:additem("Return", function(item)
+		self.menu.active = self.menu.main
+	end)
+
+	self.menu.active = self.menu.main
 end
 
 function screen:keypressed(key)
 	if screen.start then
 		if key == "down" then
-			self.menupos = self.menupos % #self.menu + 1
+			self.menu.active:cursordown()
 		elseif key == "up" then
-			self.menupos = (self.menupos - 2) % #self.menu + 1
+			self.menu.active:cursorup()
 		elseif key == "return" then
-			self.menu[self.menupos].func()
+			self.menu.active:select()
 		end
 	else
-		screen.start = true
+		if key == "space" then
+			screen.start = true
+		end
 	end
 end
 
@@ -61,19 +72,16 @@ function screen.draw.background(self)
 end
 
 function screen.draw.ui(self)
+	local screensize = Vector(love.graphics.getDimensions())
 	local title = love.graphics.newText(self.titlefont, game.title)
-	love.graphics.draw(title, 50, 0)
+	love.graphics.draw(title, screensize.x/2 - title:getWidth()/2, 0)
 
 	if screen.start then
-		for i,v in pairs(self.menu) do
-			local item = love.graphics.newText(self.menufont, v.name)
-			love.graphics.setColor(((self.menupos == i) and game.colors.blue or game.colors.white):rgb())
-			love.graphics.draw(item, self.size.x*0.7, self.size.y*(0.10 + (i-1)*0.09))
-		end
+		self.menu.active:draw(screensize.x/2, screensize.y*0.2, "center")
 	else
-		local start = love.graphics.newText(self.menufont, "Press to start!")
+		local start = love.graphics.newText(self.menufont, "Press space!")
 		love.graphics.setColor(game.colors.white:rgb())
-		love.graphics.draw(start, self.size.x/2 - start:getWidth()/2, self.size.y*0.68)
+		love.graphics.draw(start, screensize.x/2 - start:getWidth()/2, screensize.y*0.68)
 	end
 end
 

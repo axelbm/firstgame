@@ -5,6 +5,7 @@ local game = {}
 function game.conf()
 	game.title = "nogame"
 	game.version = "0"
+	game.language = "en"
 end
 hook.add("preloal", "game", function() game.conf() end)
 

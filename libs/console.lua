@@ -150,12 +150,14 @@ function console.run(input)
 	local args = {a, b, c, d, e, f}
 
 	if success then
-		local result = {}
-		for _,value in pairs(args) do
-			local v = tostring(value)
-			if v then table.insert(result, v) end
+		if #args > 0 then
+			local result = {}
+			for _,value in pairs(args) do
+				local v = tostring(value)
+				if v then table.insert(result, v) end
+			end
+			console.print(game.colors.blue, table.concat(result, ", "))
 		end
-		console.print(game.colors.blue, table.concat(result, ", "))
 	end
 end
 

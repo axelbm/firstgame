@@ -36,6 +36,10 @@ function screens.load(screen)
 
 	screen.load(screen)
 
+	if not isnil(screen.mousevisible) then
+		love.mouse.setVisible(screen.mousevisible) 
+	end
+
 	if screen.title then
 		game.settitle(screen.title)
 	end

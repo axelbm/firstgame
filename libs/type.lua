@@ -67,3 +67,7 @@ end
 function isnil(...)
 	return istype("nil", ...)
 end
+
+function isfont(...)
+	return istype("Font", ...)
+end
